@@ -11,7 +11,9 @@ function App() {
   // Controls
   const [resolution, setResolution] = useState<number>(100);
   const [contrast, setContrast] = useState<number>(100);
+  const [aspectCorrection, setAspectCorrection] = useState<number>(0.55);
   const [isColored, setIsColored] = useState<boolean>(false);
+  const [isEmoji, setIsEmoji] = useState<boolean>(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -161,19 +163,60 @@ function App() {
             
             <div className="control-group">
               <div className="control-header">
-                <label>Color Mode</label>
-                <span className="control-value">{isColored ? 'Colored' : 'B&W'}</span>
+                <label>Aspect Ratio Correction</label>
+                <span className="control-value">{aspectCorrection.toFixed(2)}x</span>
               </div>
-              <button 
-                className="btn" 
-                onClick={() => setIsColored(!isColored)}
-                style={{
-                  background: isColored ? 'var(--accent-glow)' : 'rgba(255, 255, 255, 0.05)',
-                  borderColor: isColored ? 'var(--accent-color)' : 'var(--panel-border)'
-                }}
-              >
-                Toggle Color
-              </button>
+              <input 
+                type="range" 
+                min="0.2" 
+                max="3.0" 
+                step="0.05"
+                value={aspectCorrection} 
+                onChange={(e) => setAspectCorrection(Number(e.target.value))} 
+              />
+            </div>
+            
+            <div style={{display: 'flex', gap: '0.5rem'}}>
+              <div className="control-group" style={{flex: 1}}>
+                <div className="control-header">
+                  <label>Color Mode</label>
+                  <span className="control-value">{isColored ? 'Colored' : 'B&W'}</span>
+                </div>
+                <button 
+                  className="btn" 
+                  onClick={() => setIsColored(!isColored)}
+                  disabled={isEmoji}
+                  style={{
+                    background: isColored && !isEmoji ? 'var(--accent-glow)' : 'rgba(255, 255, 255, 0.05)',
+                    borderColor: isColored && !isEmoji ? 'var(--accent-color)' : 'var(--panel-border)',
+                    opacity: isEmoji ? 0.5 : 1
+                  }}
+                >
+                  Toggle Color
+                </button>
+              </div>
+
+              <div className="control-group" style={{flex: 1}}>
+                <div className="control-header">
+                  <label>Emoji Mode</label>
+                  <span className="control-value">{isEmoji ? 'On' : 'Off'}</span>
+                </div>
+                <button 
+                  className="btn" 
+                  onClick={() => {
+                    const newMode = !isEmoji;
+                    setIsEmoji(newMode);
+                    if (newMode && aspectCorrection < 0.8) setAspectCorrection(1.0);
+                    if (!newMode && aspectCorrection >= 0.8) setAspectCorrection(0.55);
+                  }}
+                  style={{
+                    background: isEmoji ? 'var(--accent-glow)' : 'rgba(255, 255, 255, 0.05)',
+                    borderColor: isEmoji ? 'var(--accent-color)' : 'var(--panel-border)'
+                  }}
+                >
+                  Toggle Emoji
+                </button>
+              </div>
             </div>
             
             <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
@@ -227,7 +270,9 @@ function App() {
               imageSrc={imageSrc} 
               resolution={resolution} 
               contrast={contrast} 
+              aspectCorrection={aspectCorrection}
               isColored={isColored}
+              isEmoji={isEmoji}
               onAsciiGenerated={handleAsciiGenerated} 
             />
           </div>
