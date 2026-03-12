@@ -11,6 +11,7 @@ function App() {
   // Controls
   const [resolution, setResolution] = useState<number>(100);
   const [contrast, setContrast] = useState<number>(100);
+  const [isColored, setIsColored] = useState<boolean>(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -158,6 +159,23 @@ function App() {
               />
             </div>
             
+            <div className="control-group">
+              <div className="control-header">
+                <label>Color Mode</label>
+                <span className="control-value">{isColored ? 'Colored' : 'B&W'}</span>
+              </div>
+              <button 
+                className="btn" 
+                onClick={() => setIsColored(!isColored)}
+                style={{
+                  background: isColored ? 'var(--accent-glow)' : 'rgba(255, 255, 255, 0.05)',
+                  borderColor: isColored ? 'var(--accent-color)' : 'var(--panel-border)'
+                }}
+              >
+                Toggle Color
+              </button>
+            </div>
+            
             <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
               <button className="btn btn-primary" onClick={handleCopy} style={{flex: 1}}>
                 <Copy size={18} /> Copy
@@ -180,14 +198,24 @@ function App() {
           
           <div className="ascii-container">
             {asciiText ? (
-              <pre 
-                className="ascii-pre"
-                style={{
-                  fontSize: `${Math.max(4, Math.min(14, 800 / resolution))}px`
-                }}
-              >
-                {asciiText}
-              </pre>
+              isColored ? (
+                <pre 
+                  className="ascii-pre"
+                  style={{
+                    fontSize: `${Math.max(4, Math.min(14, 800 / resolution))}px`
+                  }}
+                  dangerouslySetInnerHTML={{ __html: asciiText }}
+                />
+              ) : (
+                <pre 
+                  className="ascii-pre"
+                  style={{
+                    fontSize: `${Math.max(4, Math.min(14, 800 / resolution))}px`
+                  }}
+                >
+                  {asciiText}
+                </pre>
+              )
             ) : (
               <div className="empty-state">
                 <ImageIcon size={48} />
@@ -199,6 +227,7 @@ function App() {
               imageSrc={imageSrc} 
               resolution={resolution} 
               contrast={contrast} 
+              isColored={isColored}
               onAsciiGenerated={handleAsciiGenerated} 
             />
           </div>

@@ -7,6 +7,7 @@ interface AsciiCanvasProps {
   imageSrc: string | null;
   resolution: number;
   contrast: number;
+  isColored: boolean;
   onAsciiGenerated: (ascii: string) => void;
 }
 
@@ -14,6 +15,7 @@ export const AsciiCanvas: React.FC<AsciiCanvasProps> = ({
   imageSrc,
   resolution,
   contrast,
+  isColored,
   onAsciiGenerated,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,7 +63,13 @@ export const AsciiCanvas: React.FC<AsciiCanvasProps> = ({
           const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
           
           const charIndex = Math.floor((luminance / 255) * (DARK_THEME_CHARS.length - 1));
-          asciiStr += DARK_THEME_CHARS[charIndex];
+          const char = DARK_THEME_CHARS[charIndex];
+
+          if (isColored) {
+            asciiStr += `<span style="color: rgb(${data[offset]},${data[offset+1]},${data[offset+2]})">${char === ' ' ? '&nbsp;' : char}</span>`;
+          } else {
+            asciiStr += char;
+          }
         }
         asciiStr += '\n';
       }
@@ -69,7 +77,7 @@ export const AsciiCanvas: React.FC<AsciiCanvasProps> = ({
       onAsciiGenerated(asciiStr);
     };
     img.src = imageSrc;
-  }, [imageSrc, resolution, contrast, onAsciiGenerated]);
+  }, [imageSrc, resolution, contrast, isColored, onAsciiGenerated]);
 
   return <canvas ref={canvasRef} style={{ display: 'none' }} />;
 };
