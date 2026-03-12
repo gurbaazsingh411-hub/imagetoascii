@@ -184,6 +184,17 @@ function App() {
           </div>
         </section>
       </main>
+      
+      <footer style={{
+        textAlign: 'center', 
+        padding: '2rem 1rem', 
+        marginTop: '2rem',
+        color: 'var(--text-secondary)',
+        fontSize: '0.9rem',
+        borderTop: '1px solid var(--panel-border)'
+      }}>
+        Made with <Sparkles size={14} style={{display: 'inline', color: 'var(--accent-color)'}}/> by <span className="gradient-text" style={{fontWeight: 600}}>DevX</span>
+      </footer>
     </div>
   );
 }
